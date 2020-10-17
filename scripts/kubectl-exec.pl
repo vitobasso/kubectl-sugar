@@ -22,6 +22,7 @@ sub find_and_exec {
       my $command = "kubectl -n $ns exec -it $pod bash";
       say $command;
       my $session = Expect->spawn($command);
+      $session->slave->clone_winsize_from(\*STDIN);
       $session->interact();
       retry($ns) if $?==256 and $should_retry;      
    } elsif (not @result) {
@@ -34,6 +35,6 @@ sub find_and_exec {
 sub retry {
    undef $should_retry;
    my $ns = shift;
-   print `$RealBin/kubectl-get.pl pod $ns`;
+   print `$RealBin/kubectl-get.pl -q pod $ns`;
    find_and_exec();
 }

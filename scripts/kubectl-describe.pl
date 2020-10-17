@@ -35,6 +35,6 @@ sub find_and_describe {
 sub retry {
    undef $should_retry;
    my $ns = shift;
-   print `$RealBin/kubectl-get.pl pod $ns`;
+   print `$RealBin/kubectl-get.pl -q pod $ns`;
    find_and_describe();
 }
