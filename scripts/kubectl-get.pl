@@ -45,9 +45,9 @@ sub find_resource {
 }
 
 sub read_file {
-   my $name = shift;
-   open(FILE, '<', $name) or die "Failed to read file: [$name]. $!";
+   open(FILE, '<', shift) or die $!;
    chomp(my @lines = <FILE>);
    close FILE;
-   @lines;
+   my @names = map { (split /\s+/)[0] } @lines;
+   splice @names, 1, -1;
 }
