@@ -35,5 +35,7 @@ sub read_file {
    open(FILE, '<', shift) or die $!;
    chomp(my @lines = <FILE>);
    close FILE; 
-   @lines;
+   my @names = map { (split /\s+/)[0] } @lines;
+   splice @names, 1, -1;
 }
+

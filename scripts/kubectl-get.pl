@@ -23,7 +23,7 @@ my $resource = (find_resource($arg1) or find_resource($arg2));
 
 if($namespace and $resource) {
    say "kubectl get $resource -n $namespace";
-   my $output = `kubectl get $resource -n $namespace | awk 'NR\>1 {print \$1}' | tee ~/.scripts-kubectl/resources/$namespace-$resource`;
+   my $output = `kubectl get $resource -n $namespace | tee ~/.scripts-kubectl/resources/$namespace-$resource`;
    print "\n$output" unless $quiet;
 } else {
    say "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;
