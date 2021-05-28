@@ -1,9 +1,5 @@
 A colleciton of perl scripts to help me type less kubectl commands.
 
-
-`kinit`  
-Gets the list of contexts, namespaces and resource types and caches under `~/.scripts-kubectl/` for the following commands.
-
 `kctx`  
 Shows the current context.
 

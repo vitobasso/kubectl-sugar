@@ -7,5 +7,8 @@ ln -s $DIR/scripts/kubectl-describe.pl $TARGET/kdesc
 ln -s $DIR/scripts/kubectl-exec.pl $TARGET/kexe
 ln -s $DIR/scripts/kubectl-find.pl $TARGET/kfind
 ln -s $DIR/scripts/kubectl-get.pl $TARGET/kget
-ln -s $DIR/scripts/kubectl-init.pl $TARGET/knit #kinit clashes with a Kerberos bin
 ln -s $DIR/scripts/kubectl-logs.pl $TARGET/klog
+echo
+
+echo Initializing the cache ...
+$DIR/scripts/kubectl-init.pl
