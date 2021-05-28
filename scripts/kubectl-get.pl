@@ -23,9 +23,11 @@ my $namespace = (find_namespace($arg1) or find_namespace($arg2));
 my $resource = (find_resource($arg1) or find_resource($arg2));
 my $context = get_context() or say "Context not set." and exit;
 
+`mkdir -p ~/.kubesugar-cache/resources/$context`;
+
 if($namespace and $resource) {
    say "kubectl get $resource -n $namespace";
-   my $output = `kubectl get $resource -n $namespace | tee ~/.scripts-kubectl/resources/$context/$namespace-$resource`;
+   my $output = `kubectl get $resource -n $namespace | tee ~/.kubesugar-cache/resources/$context/$namespace-$resource`;
    print "\n$output" unless $quiet;
 } else {
    say "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;
@@ -36,13 +38,13 @@ if($namespace and $resource) {
 
 sub find_namespace {
    my $string=shift;
-   my @found = grep { /^$string$/ } read_file("$ENV{'HOME'}/.scripts-kubectl/namespaces");
+   my @found = grep { /^$string$/ } read_file("$ENV{'HOME'}/.kubesugar-cache/namespaces");
    shift @found;
 }
 
 sub find_resource {
    my $string=shift;
-   my @found = grep { /^${string}s?$/ } read_file("$ENV{'HOME'}/.scripts-kubectl/resource-types");
+   my @found = grep { /^${string}s?$/ } read_file("$ENV{'HOME'}/.kubesugar-cache/resource-types");
    shift @found;
 }
 

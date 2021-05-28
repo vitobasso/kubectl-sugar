@@ -25,7 +25,7 @@ sub use_context {
 
 sub search {
    my @query = @ARGV;
-   my $file = "$ENV{'HOME'}/.scripts-kubectl/contexts";
+   my $file = "$ENV{'HOME'}/.kubesugar-cache/contexts";
    map { (split " ", $_)[0] } 
       grep { my $line = $_; all { $line =~ /$_/ } @query } 
       read_file($file);
