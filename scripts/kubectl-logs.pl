@@ -2,12 +2,12 @@
 use v5.12;
 use FindBin qw($RealBin);
 use Getopt::Long qw(GetOptions);
-
 use Expect;
 
 sub help {
-   say "Usage: klog <pod search terms>";
-   say "Examples";
+   say "Usage: klog <pod search terms> [-c container] [-f]";
+   say "";
+   say "Examples:";
    say "\tklog namespace my-cool-app";
    say "\tklog app";
 }

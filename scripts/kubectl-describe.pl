@@ -5,9 +5,10 @@ use Expect;
 
 sub help {
    say "Usage: kdesc <pod search terms>";
-   say "Examples";
+   say "";
+   say "Examples:";
    say "\tkdesc namespace my-cool-app";
-   say "\tkdesc app namespace";
+   say "\tkdesc namespace app";
    say "\tkdesc app";
 }
 
