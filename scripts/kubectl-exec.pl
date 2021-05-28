@@ -1,16 +1,20 @@
 #!/usr/bin/perl
 use v5.12;
 use FindBin qw($RealBin);
+use Getopt::Long qw(GetOptions);
 use Expect;
 
 sub help {
-   say "Usage: kexe <pod search terms>";
+   say "Usage: kexe <pod search terms> [-c container]";
    say "Examples";
-   say "\tkexe dap kafkacat";
-   say "\tkexe cat";
+   say "\tkexe dap tool";
+   say "\tkexe tool";
 }
 
 help and exit unless @ARGV;
+
+my $container;
+GetOptions('container|c=s' => \$container) or help and exit;
 
 my $should_retry = "once";
 find_and_exec();
@@ -19,7 +23,10 @@ sub find_and_exec {
    my @result = `$RealBin/kubectl-find.pl pod @ARGV`;
    if(scalar @result == 1) {
       my ($ns, $res, $pod) = split " ", shift @result;
-      my $command = "kubectl -n $ns exec -it $pod bash";
+      my $command = "kubectl -n $ns exec -it $pod -- bash";
+      if($container) {
+        $command = $command . " -c $container";
+      }
       say $command;
       my $session = Expect->spawn($command);
       $session->slave->clone_winsize_from(\*STDIN);

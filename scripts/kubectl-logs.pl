@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use v5.12;
 use FindBin qw($RealBin);
+use Getopt::Long qw(GetOptions);
+
 use Expect;
 
 sub help {
@@ -12,6 +14,9 @@ sub help {
 
 help and exit unless @ARGV;
 
+my $container;
+GetOptions('container|c=s' => \$container) or help and exit;
+
 my $should_retry = "once";
 find_and_exec();
 
@@ -20,6 +25,9 @@ sub find_and_exec {
    if(scalar @result == 1) {
       my ($ns, $res, $pod) = split " ", shift @result;
       my $command = "kubectl -n $ns logs $pod";
+      if($container) {
+        $command = $command . " -c $container";
+      }
       say $command;
       say "";
       say `$command`;
