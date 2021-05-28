@@ -34,14 +34,18 @@ if($namespace and $resource) {
 
 sub find_namespace {
    my $string = shift;
-   my @found = grep { /^$string$/ } read_file("$ENV{'HOME'}/.kubesugar-cache/namespaces");
+   my @found = grep { /^$string$/ } 
+                map { (split /\s+/)[0] } 
+                read_file("$ENV{'HOME'}/.kubesugar-cache/namespaces");
    shift @found;
 }
 
 sub find_resource {
    my $string = shift;
-   my @found = grep { /^${string}s?$/ } read_file("$ENV{'HOME'}/.kubesugar-cache/resource-types");
-   shift @found;
+   my @types = read_file("$ENV{'HOME'}/.kubesugar-cache/resource-types");
+   my @found_names = grep { /^${string}s?$/ } map { (split /\s+/)[0] } @types;
+   my @found_mnemonics = grep { /^${string}$/ } map { (split /\s+/)[1] } @types;
+   shift @found_names || shift @found_mnemonics;
 }
 
 sub get_context {
@@ -54,8 +58,7 @@ sub read_file {
    open(FILE, '<', shift) or die $!;
    chomp(my @lines = <FILE>);
    close FILE;
-   my @names = map { (split /\s+/)[0] } @lines;
-   splice @names, 1;
+   splice @lines, 1;
 }
 
 sub write_file {
