@@ -6,9 +6,9 @@ use Expect;
 sub help {
    say "Usage: kdesc <pod search terms>";
    say "Examples";
-   say "\tkdesc dap lap-dog";
-   say "\tkdesc dog dap";
-   say "\tkdesc dog";
+   say "\tkdesc namespace my-cool-app";
+   say "\tkdesc app namespace";
+   say "\tkdesc app";
 }
 
 help and exit unless @ARGV;

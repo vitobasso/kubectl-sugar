@@ -7,9 +7,9 @@ sub help {
    say "Usage: \tkfind <search terms>";
    say "";
    say "Examples:";
-   say "\tkfind pod lap-dog dap";
-   say "\tkfind pod dap dog";
-   say "\tkfind dog";
+   say "\tkfind pod my-cool-app namespace";
+   say "\tkfind pod namespace app";
+   say "\tkfind app";
 }
 
 my @search = @ARGV or help and exit;

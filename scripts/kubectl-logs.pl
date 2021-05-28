@@ -8,8 +8,8 @@ use Expect;
 sub help {
    say "Usage: klog <pod search terms>";
    say "Examples";
-   say "\tklog dap wep-mask";
-   say "\tklog mask";
+   say "\tklog namespace my-cool-app";
+   say "\tklog app";
 }
 
 help and exit unless @ARGV;

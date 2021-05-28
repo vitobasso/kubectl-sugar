@@ -7,7 +7,7 @@ use Expect;
 sub help {
    say "Usage: kexe <pod search terms> [-c container]";
    say "Examples";
-   say "\tkexe dap tool";
+   say "\tkexe namespace tool";
    say "\tkexe tool";
 }
 

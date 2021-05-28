@@ -3,13 +3,8 @@ use v5.12;
 use FindBin qw($RealBin);
 use Getopt::Long qw(GetOptions);
 
-
 sub help {
    say "Usage: \tkget <namespace> <resource>";
-   say "";
-   say "Examples:";
-   say "\tkget dap pods";
-   say "\tkget pod dap";
    say "";
    say "Options:";
    say "\t--quiet, -q\t Don't print the output from kubectl, only the kubectl command executed.";
@@ -27,7 +22,8 @@ my $context = get_context() or say "Context not set." and exit;
 
 if($namespace and $resource) {
    say "kubectl get $resource -n $namespace";
-   my $output = `kubectl get $resource -n $namespace | tee ~/.kubesugar-cache/resources/$context/$namespace-$resource`;
+   my $output = `kubectl get $resource -n $namespace`;
+   write_file($output, "$ENV{'HOME'}/.kubesugar-cache/resources/$context/$namespace-$resource") if $output;
    print "\n$output" unless $quiet;
 } else {
    say "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;
@@ -37,13 +33,13 @@ if($namespace and $resource) {
 }
 
 sub find_namespace {
-   my $string=shift;
+   my $string = shift;
    my @found = grep { /^$string$/ } read_file("$ENV{'HOME'}/.kubesugar-cache/namespaces");
    shift @found;
 }
 
 sub find_resource {
-   my $string=shift;
+   my $string = shift;
    my @found = grep { /^${string}s?$/ } read_file("$ENV{'HOME'}/.kubesugar-cache/resource-types");
    shift @found;
 }
@@ -60,4 +56,12 @@ sub read_file {
    close FILE;
    my @names = map { (split /\s+/)[0] } @lines;
    splice @names, 1;
+}
+
+sub write_file {
+    my $data = shift;
+    my $filename = shift;
+    open(FH, '>', $filename) or die $!;
+    print FH $data;
+    close(FH);
 }
