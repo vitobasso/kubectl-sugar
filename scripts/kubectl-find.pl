@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use v5.12;
+use FindBin qw($RealBin);
 use List::Util qw(all);
 
 sub help {
@@ -12,7 +13,8 @@ sub help {
 }
 
 my @search = @ARGV or help and exit;
-my $dir = "$ENV{'HOME'}/.scripts-kubectl/resources";
+my $context = get_context() or say "Context not set." and exit;
+my $dir = "$ENV{'HOME'}/.scripts-kubectl/resources/$context";
 my @filenames = list_files($dir);
 
 foreach my $file (sort @filenames){
@@ -22,6 +24,12 @@ foreach my $file (sort @filenames){
          say "$ns $res $line";
       }
    }
+}
+
+sub get_context {
+    if(`$RealBin/kubectl-context.pl` =~ /.*: (.*)/) {
+        $1;
+    }
 }
 
 sub list_files {

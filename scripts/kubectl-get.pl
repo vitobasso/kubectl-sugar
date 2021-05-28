@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 use v5.12;
+use FindBin qw($RealBin);
 use Getopt::Long qw(GetOptions);
 
 
@@ -20,10 +21,11 @@ GetOptions('quiet|q' => \$quiet) or help and exit;
 my ($arg1, $arg2) = (@ARGV);
 my $namespace = (find_namespace($arg1) or find_namespace($arg2));
 my $resource = (find_resource($arg1) or find_resource($arg2));
+my $context = get_context() or say "Context not set." and exit;
 
 if($namespace and $resource) {
    say "kubectl get $resource -n $namespace";
-   my $output = `kubectl get $resource -n $namespace | tee ~/.scripts-kubectl/resources/$namespace-$resource`;
+   my $output = `kubectl get $resource -n $namespace | tee ~/.scripts-kubectl/resources/$context/$namespace-$resource`;
    print "\n$output" unless $quiet;
 } else {
    say "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;
@@ -42,6 +44,12 @@ sub find_resource {
    my $string=shift;
    my @found = grep { /^${string}s?$/ } read_file("$ENV{'HOME'}/.scripts-kubectl/resource-types");
    shift @found;
+}
+
+sub get_context {
+    if(`$RealBin/kubectl-context.pl` =~ /.*: (.*)/) {
+        $1;
+    }
 }
 
 sub read_file {
