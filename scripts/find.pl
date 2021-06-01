@@ -28,7 +28,7 @@ foreach my $file (sort @filenames){
 }
 
 sub get_context {
-    if(`$RealBin/kubectl-context.pl` =~ /.*: (.*)/) {
+    if(`$RealBin/context.pl` =~ /.*: (.*)/) {
         $1;
     }
 }

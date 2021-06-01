@@ -49,7 +49,7 @@ sub find_resource {
 }
 
 sub get_context {
-    if(`$RealBin/kubectl-context.pl` =~ /.*: (.*)/) {
+    if(`$RealBin/context.pl` =~ /.*: (.*)/) {
         $1;
     }
 }

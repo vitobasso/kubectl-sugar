@@ -18,7 +18,7 @@ my $should_retry = "once";
 find_and_describe();
 
 sub find_and_describe {
-   my @result = `$RealBin/kubectl-find.pl @ARGV`;
+   my @result = `$RealBin/find.pl @ARGV`;
    if(scalar @result == 1) {
       my ($ns, $res, $pod) = split " ", shift @result;
       my $command = "kubectl -n $ns describe $res/$pod";
@@ -37,6 +37,6 @@ sub find_and_describe {
 sub retry {
    undef $should_retry;
    my $ns = shift;
-   print `$RealBin/kubectl-get.pl -q pod $ns`;
+   print `$RealBin/get.pl -q pod $ns`;
    find_and_describe();
 }
