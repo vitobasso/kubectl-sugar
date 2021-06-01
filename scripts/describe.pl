@@ -4,12 +4,12 @@ use FindBin qw($RealBin);
 use Expect;
 
 sub help {
-   say "Usage: kdesc <pod search terms>";
+   say "Usage: kdes <pod search terms>";
    say "";
    say "Examples:";
-   say "\tkdesc namespace my-cool-app";
-   say "\tkdesc namespace app";
-   say "\tkdesc app";
+   say "\tkdes namespace my-cool-app";
+   say "\tkdes namespace app";
+   say "\tkdes app";
 }
 
 help and exit unless @ARGV;
