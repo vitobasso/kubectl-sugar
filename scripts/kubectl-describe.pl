@@ -27,7 +27,8 @@ sub find_and_describe {
       say "\n$result" if $result;
       retry($ns) if $?==256 and $should_retry;
    } elsif (not @result) {
-      say "Can't find anything matching: @ARGV";
+      say "Can't find anything matching: [@ARGV].";
+      say "Maybe run kget to update the cache.";
    } else {
       print @result; # list matching resources
    }

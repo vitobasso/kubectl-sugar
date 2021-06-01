@@ -39,7 +39,8 @@ sub find_and_log {
       $session->interact();
       retry($ns) if $?==256 and $should_retry;      
    } elsif (not @result) {
-      say "Can't find any pods matching: @ARGV";
+      say "Can't find any pods matching: [@ARGV].";
+      say "Maybe run kget to update the cache.";
    } else {
       print @result; # list matching pods
    }
