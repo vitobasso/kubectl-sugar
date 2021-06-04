@@ -14,7 +14,7 @@ sub help {
 
 my @search = @ARGV or help and exit;
 my $context = get_context() or say "Context not set." and exit;
-my $dir = "$ENV{'HOME'}/.kubesugar-cache/resources/$context";
+my $dir = "$ENV{'HOME'}/.kubesugar-cache/$context/resources";
 `mkdir -p $dir`;
 my @filenames = list_files($dir);
 
@@ -28,9 +28,7 @@ foreach my $file (sort @filenames){
 }
 
 sub get_context {
-    if(`$RealBin/context.pl` =~ /.*: (.*)/) {
-        $1;
-    }
+   $1 if `$RealBin/context.pl` =~ /.*: (.*)/
 }
 
 sub list_files {

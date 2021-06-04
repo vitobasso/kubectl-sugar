@@ -13,17 +13,19 @@ sub help {
 my $quiet;
 GetOptions('quiet|q' => \$quiet) or help and exit;
 
+my $context = get_context() or say "Context not set." and exit;
+my $dir = "$ENV{'HOME'}/.kubesugar-cache/$context";
+`mkdir -p $dir/resources`;
+
 my ($arg1, $arg2) = (@ARGV);
 my $namespace = (find_namespace($arg1) or find_namespace($arg2));
 my $resource = (find_resource($arg1) or find_resource($arg2));
-my $context = get_context() or say "Context not set." and exit;
-
-`mkdir -p ~/.kubesugar-cache/resources/$context`;
 
 if($namespace and $resource) {
-   say "kubectl get $resource -n $namespace";
+   my $cache = "$dir/resources/$namespace-$resource";
+   say "kubectl get $resource -n $namespace > $cache";
    my $output = `kubectl get $resource -n $namespace`;
-   write_file($output, "$ENV{'HOME'}/.kubesugar-cache/resources/$context/$namespace-$resource") if $output;
+   write_file($output, $cache) if $output;
    print "\n$output" unless $quiet;
 } else {
    say "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;
@@ -36,22 +38,20 @@ sub find_namespace {
    my $string = shift;
    my @found = grep { /^$string$/ } 
                 map { (split /\s+/)[0] } 
-                read_file("$ENV{'HOME'}/.kubesugar-cache/namespaces");
+                read_file("$dir/namespaces");
    shift @found;
 }
 
 sub find_resource {
    my $string = shift;
-   my @types = read_file("$ENV{'HOME'}/.kubesugar-cache/resource-types");
+   my @types = read_file("$dir/resource-types");
    my @found_names = grep { /^${string}s?$/ } map { (split /\s+/)[0] } @types;
    my @found_mnemonics = grep { /^${string}$/ } map { (split /\s+/)[1] } @types;
    shift @found_names || shift @found_mnemonics;
 }
 
 sub get_context {
-    if(`$RealBin/context.pl` =~ /.*: (.*)/) {
-        $1;
-    }
+   $1 if `$RealBin/context.pl` =~ /.*: (.*)/
 }
 
 sub read_file {

@@ -1,15 +1,17 @@
 #!/usr/bin/perl
 use v5.12;
+use FindBin qw($RealBin);
 
-say "mkdir -p ~/.kubesugar-cache/resources";
-`mkdir -p ~/.kubesugar-cache/resources`;
+say "mkdir -p ~/.kubesugar-cache";
+`mkdir -p ~/.kubesugar-cache`;
 
-say "kubectl config get-contexts";
-`kubectl config get-contexts | tee ~/.kubesugar-cache/contexts`;
+my $contexts_command = "kubectl config get-contexts > $ENV{'HOME'}/.kubesugar-cache/contexts";
+say $contexts_command;
+`$contexts_command`;
 
-say "kubectl api-resources";
-`kubectl api-resources | tee ~/.kubesugar-cache/resource-types`;
+my $context = get_context();
+system("$RealBin/context.pl $context") if $context;
 
-say "kubectl get namespaces";
-`kubectl get namespaces | tee ~/.kubesugar-cache/namespaces`;
-
+sub get_context {
+    $1 if `$RealBin/context.pl` =~ /.*: (.*)/
+}
