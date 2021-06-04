@@ -1,5 +1,9 @@
 #!/usr/bin/perl
 use v5.12;
+use FindBin qw($RealBin);
+use lib $RealBin;
+use Common::File qw(read_file);
+use Common::Command qw(run);
 use List::Util qw(all);
 
 my $dir = "$ENV{'HOME'}/.kubesugar-cache";
@@ -22,9 +26,7 @@ if(@query) {
 
 sub use_context {
    my $name = shift;
-   my $command = "kubectl config use-context $name";
-   say $command;
-   `$command`;
+   run("kubectl config use-context $name");
 }
 
 sub init_cache {
@@ -32,18 +34,10 @@ sub init_cache {
    `mkdir -p ~/.kubesugar-cache/$context`;
    
    my $namespaces_file = "$dir/$context/namespaces";
-   if (not -e $namespaces_file) {
-       my $namespaces_command = "kubectl get namespaces > $namespaces_file";
-       say $namespaces_command;
-       `$namespaces_command`;
-   }
+   run("kubectl get namespaces > $namespaces_file") unless -e $namespaces_file;
    
    my $resources_file = "$dir/$context/resource-types";
-   if (not -e $resources_file) {
-       my $resources_command = "kubectl api-resources > $resources_file";
-       say $resources_command;
-       `$resources_command`;
-   }
+   run("kubectl api-resources > $resources_file") unless -e $resources_file;
 }
 
 sub search {
@@ -52,13 +46,7 @@ sub search {
    map { (split " ", $_)[0] }
       grep { my $line = $_; all { $line =~ /$_/ } @query }
       map { s/^\s+|\s+$//g; $_ } # trim
+      map { substr $_, 10 } # remove first column 
       read_file($file);
 }
 
-sub read_file {
-   open(FILE, '<', shift) or die $!;
-   chomp(my @lines = <FILE>);
-   close FILE;
-   my @names = map { substr $_, 10 }  @lines;
-   splice @names, 1;
-}

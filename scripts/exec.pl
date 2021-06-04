@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use v5.12;
 use FindBin qw($RealBin);
+use lib $RealBin;
+use Common::Command qw(run_attach find_do_retry);
 use Getopt::Long qw(GetOptions);
 use Expect;
 
@@ -11,39 +13,16 @@ sub help {
    say "\tkexe namespace tool";
    say "\tkexe tool";
 }
-
 help and exit unless @ARGV;
 
 my $container;
 GetOptions('container|c=s' => \$container) or help and exit;
 
-my $should_retry = "once";
-find_and_exec();
+find_do_retry("pod @ARGV", \&exec, "any pods");
 
-sub find_and_exec {
-   my @result = `$RealBin/find.pl pod @ARGV`;
-   if(scalar @result == 1) {
-      my ($ns, $res, $pod) = split " ", shift @result;
-      my $command = "kubectl -n $ns exec -it $pod -- bash";
-      if($container) {
-        $command = $command . " -c $container";
-      }
-      say $command;
-      my $session = Expect->spawn($command);
-      $session->slave->clone_winsize_from(\*STDIN);
-      $session->interact();
-      retry($ns) if $?==256 and $should_retry;      
-   } elsif (not @result) {
-      say "Can't find any pods matching: [@ARGV].";
-      say "Maybe run kget to update the cache.";
-   } else {
-      print @result; # list matching pods
-   }
-}
-   
-sub retry {
-   undef $should_retry;
-   my $ns = shift;
-   print `$RealBin/get.pl -q pod $ns`;
-   find_and_exec();
+sub exec {
+    my ($ns, undef, $pod) = @_;
+    my $command = "kubectl -n $ns exec -it $pod -- bash";
+    $command = $command . " -c $container" if $container;
+    run_attach($command);
 }

@@ -1,6 +1,8 @@
 #!/usr/bin/perl
 use v5.12;
 use FindBin qw($RealBin);
+use lib $RealBin;
+use Common::Command qw(run find_do_retry);
 use Expect;
 
 sub help {
@@ -8,35 +10,14 @@ sub help {
    say "";
    say "Examples:";
    say "\tkdes namespace my-cool-app";
-   say "\tkdes namespace app";
    say "\tkdes app";
 }
-
 help and exit unless @ARGV;
 
-my $should_retry = "once";
-find_and_describe();
+find_do_retry(@ARGV, \&describe, "anything");
 
-sub find_and_describe {
-   my @result = `$RealBin/find.pl @ARGV`;
-   if(scalar @result == 1) {
-      my ($ns, $res, $pod) = split " ", shift @result;
-      my $command = "kubectl -n $ns describe $res/$pod";
-      say $command;
-      my $result = `$command`;
-      say "\n$result" if $result;
-      retry($ns) if $?==256 and $should_retry;
-   } elsif (not @result) {
-      say "Can't find anything matching: [@ARGV].";
-      say "Maybe run kget to update the cache.";
-   } else {
-      print @result; # list matching resources
-   }
-}
-
-sub retry {
-   undef $should_retry;
-   my $ns = shift;
-   print `$RealBin/get.pl -q pod $ns`;
-   find_and_describe();
+sub describe {
+    my ($ns, $type, $name) = @_;
+    my $result = run("kubectl -n $ns describe $type/$name");
+    say "\n$result" if $result;
 }

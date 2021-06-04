@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 use v5.12;
 use FindBin qw($RealBin);
+use lib $RealBin;
+use Common::File qw(read_file list_files);
+use Common::Context qw(get_context);
 use List::Util qw(all);
 
 sub help {
@@ -19,30 +22,11 @@ my $dir = "$ENV{'HOME'}/.kubesugar-cache/$context/resources";
 my @filenames = list_files($dir);
 
 foreach my $file (sort @filenames){
-   foreach my $line (read_file("$dir/$file")){
+   my @lines = map { (split /\s+/)[0] } read_file("$dir/$file");
+   foreach my $line (@lines){
       if(all { "$file $line" =~ /$_/ } @search){
          my ($ns, $res) = split "-", $file; 
          say "$ns $res $line";
       }
    }
 }
-
-sub get_context {
-   $1 if `$RealBin/context.pl` =~ /.*: (.*)/
-}
-
-sub list_files {
-   opendir(DIR, shift) or die $!;
-   my @files = readdir DIR;
-   close DIR;
-   @files;
-}
-
-sub read_file {
-   open(FILE, '<', shift) or die $!;
-   chomp(my @lines = <FILE>);
-   close FILE; 
-   my @names = map { (split /\s+/)[0] } @lines;
-   splice @names, 1;
-}
-

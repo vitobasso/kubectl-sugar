@@ -1,6 +1,10 @@
 #!/usr/bin/perl
 use v5.12;
 use FindBin qw($RealBin);
+use lib $RealBin;
+use Common::File qw(read_file);
+use Common::Context qw(get_context);
+use Common::Command qw(run_cache);
 use Getopt::Long qw(GetOptions);
 
 sub help {
@@ -15,17 +19,14 @@ GetOptions('quiet|q' => \$quiet) or help and exit;
 
 my $context = get_context() or say "Context not set." and exit;
 my $dir = "$ENV{'HOME'}/.kubesugar-cache/$context";
-`mkdir -p $dir/resources`;
 
 my ($arg1, $arg2) = (@ARGV);
 my $namespace = (find_namespace($arg1) or find_namespace($arg2));
 my $resource = (find_resource($arg1) or find_resource($arg2));
 
 if($namespace and $resource) {
-   my $cache = "$dir/resources/$namespace-$resource";
-   say "kubectl get $resource -n $namespace > $cache";
-   my $output = `kubectl get $resource -n $namespace`;
-   write_file($output, $cache) if $output;
+   `mkdir -p $dir/resources`;
+   my $output = run_cache("kubectl get $resource -n $namespace", "$dir/resources/$namespace-$resource");
    print "\n$output" unless $quiet;
 } else {
    say "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;
@@ -48,23 +49,4 @@ sub find_resource {
    my @found_names = grep { /^${string}s?$/ } map { (split /\s+/)[0] } @types;
    my @found_mnemonics = grep { /^${string}$/ } map { (split /\s+/)[1] } @types;
    shift @found_names || shift @found_mnemonics;
-}
-
-sub get_context {
-   $1 if `$RealBin/context.pl` =~ /.*: (.*)/
-}
-
-sub read_file {
-   open(FILE, '<', shift) or die $!;
-   chomp(my @lines = <FILE>);
-   close FILE;
-   splice @lines, 1;
-}
-
-sub write_file {
-    my $data = shift;
-    my $filename = shift;
-    open(FH, '>', $filename) or die $!;
-    print FH $data;
-    close(FH);
 }
