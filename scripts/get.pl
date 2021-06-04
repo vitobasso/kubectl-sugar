@@ -26,7 +26,7 @@ my $resource = (find_resource($arg1) or find_resource($arg2));
 
 if($namespace and $resource) {
    `mkdir -p $dir/resources`;
-   my $output = run_cache("kubectl get $resource -n $namespace", "$dir/resources/$namespace-$resource");
+   my $output = run_cache("kubectl get $resource -n $namespace", "$context/resources/$namespace-$resource");
    print "\n$output" unless $quiet;
 } else {
    say "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;

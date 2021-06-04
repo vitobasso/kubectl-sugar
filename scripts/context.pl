@@ -3,7 +3,7 @@ use v5.12;
 use FindBin qw($RealBin);
 use lib $RealBin;
 use Common::File qw(read_file);
-use Common::Command qw(run);
+use Common::Command qw(run run_cache);
 use List::Util qw(all);
 
 my $dir = "$ENV{'HOME'}/.kubesugar-cache";
@@ -32,12 +32,8 @@ sub use_context {
 sub init_cache {
    my $context = shift;
    `mkdir -p ~/.kubesugar-cache/$context`;
-   
-   my $namespaces_file = "$dir/$context/namespaces";
-   run("kubectl get namespaces > $namespaces_file") unless -e $namespaces_file;
-   
-   my $resources_file = "$dir/$context/resource-types";
-   run("kubectl api-resources > $resources_file") unless -e $resources_file;
+   run_cache("kubectl get namespaces", "$context/namespaces") unless -e "$dir/$context/namespaces";
+   run_cache("kubectl api-resources", "$context/resource-types") unless -e "$dir/$context/resource-types";
 }
 
 sub search {

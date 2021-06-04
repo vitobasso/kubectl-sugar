@@ -4,27 +4,42 @@ use v5.12;
 use FindBin qw($RealBin);
 use lib $RealBin;
 use Common::File qw(write_file);
+use Term::ANSIColor;
 
 use Exporter qw(import);
 our @EXPORT_OK = qw( run run_cache run_attach find_do_retry );
 
 sub run {
     my $command = shift;
+    
+    print color('bold green');
     say $command;
+    print color('reset');
+    
     `$command`;
 }
 
 sub run_cache {
     my ($command, $cache) = @_;
-    say "$command > $cache";
+    
+    print color('bold green');
+    print "$command";
+    print color('reset grey8');
+    print " > ~/.kubesugar-cache/$cache\n";
+    print color('reset');
+    
     my $output = `$command`;
-    write_file($output, $cache) if $output;
+    write_file($output, "$ENV{'HOME'}/.kubesugar-cache/$cache") if $output;
     $output
 }
 
 sub run_attach {
     my $command = shift;
+    
+    print color('bold green');
     say $command;
+    print color('reset');
+    
     my $session = Expect->spawn($command);
     $session->slave->clone_winsize_from(\*STDIN);
     $session->interact();
