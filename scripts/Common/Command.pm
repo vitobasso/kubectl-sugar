@@ -12,7 +12,7 @@ our @EXPORT_OK = qw( run run_cache run_attach find_do_retry );
 sub run {
     my $command = shift;
     
-    print color('bold green');
+    print color('bold');
     say $command;
     print color('reset');
     
@@ -22,7 +22,7 @@ sub run {
 sub run_cache {
     my ($command, $cache) = @_;
     
-    print color('bold green');
+    print color('bold');
     print "$command";
     print color('reset grey8');
     print " > ~/.kubesugar-cache/$cache\n";
@@ -36,7 +36,7 @@ sub run_cache {
 sub run_attach {
     my $command = shift;
     
-    print color('bold green');
+    print color('bold');
     say $command;
     print color('reset');
     
@@ -59,7 +59,7 @@ sub find_do_retry {
           retry($ns) if $?==256 and $should_retry;      
        } elsif (not @result) {
           say "Can't find $thing_missing matching: [@ARGV].";
-          say "Maybe run kget to update the cache.";
+          say "Maybe run " . color("bold") . "kget" . color('reset') . " to update the cache.";
        } else {
           print @result; # list matching resources
        }

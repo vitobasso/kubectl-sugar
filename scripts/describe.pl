@@ -14,7 +14,7 @@ sub help {
 }
 help and exit unless @ARGV;
 
-find_do_retry(@ARGV, \&describe, "anything");
+find_do_retry(join(" ", @ARGV), \&describe, "anything");
 
 sub describe {
     my ($ns, $type, $name) = @_;
