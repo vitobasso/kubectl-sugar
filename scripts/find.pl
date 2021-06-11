@@ -17,12 +17,12 @@ sub help {
 
 my @search = @ARGV or help and exit;
 my $context = get_context() or say "Context not set." and exit;
-my $dir = "$ENV{'HOME'}/.kubesugar-cache/$context/resources";
-`mkdir -p $dir`;
-my @filenames = list_files($dir);
+my $cache = "$ENV{'HOME'}/.kubesugar-cache/$context/resources";
+`mkdir -p $cache`;
+my @filenames = list_files($cache);
 
 foreach my $file (sort @filenames){
-   my @lines = map { (split /\s+/)[0] } read_file("$dir/$file");
+   my @lines = map { (split /\s+/)[0] } read_file("$cache/$file");
    foreach my $line (@lines){
       if(all { "$file $line" =~ /$_/ } @search){
          my ($ns, $res) = split "-", $file; 

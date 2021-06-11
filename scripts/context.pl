@@ -6,7 +6,7 @@ use Common::File qw(read_file);
 use Common::Command qw(run run_cache);
 use List::Util qw(all);
 
-my $dir = "$ENV{'HOME'}/.kubesugar-cache";
+my $cache = "$ENV{'HOME'}/.kubesugar-cache";
 
 my @query = @ARGV;
 if(@query) {
@@ -32,13 +32,13 @@ sub use_context {
 sub init_cache {
    my $context = shift;
    `mkdir -p ~/.kubesugar-cache/$context`;
-   run_cache("kubectl get namespaces", "$context/namespaces") unless -e "$dir/$context/namespaces";
-   run_cache("kubectl api-resources", "$context/resource-types") unless -e "$dir/$context/resource-types";
+   run_cache("kubectl get namespaces", "$context/namespaces") unless -e "$cache/$context/namespaces";
+   run_cache("kubectl api-resources", "$context/resource-types") unless -e "$cache/$context/resource-types";
 }
 
 sub search {
    my @query = @ARGV;
-   my $file = "$dir/contexts";
+   my $file = "$cache/contexts";
    map { (split " ", $_)[0] }
       grep { my $line = $_; all { $line =~ /$_/ } @query }
       map { s/^\s+|\s+$//g; $_ } # trim

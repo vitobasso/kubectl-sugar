@@ -18,14 +18,14 @@ my $quiet;
 GetOptions('quiet|q' => \$quiet) or help and exit;
 
 my $context = get_context() or say "Context not set." and exit;
-my $dir = "$ENV{'HOME'}/.kubesugar-cache/$context";
+my $cache = "$ENV{'HOME'}/.kubesugar-cache/$context";
 
 my ($arg1, $arg2) = (@ARGV);
 my $namespace = (find_namespace($arg1) or find_namespace($arg2));
 my $resource = (find_resource($arg1) or find_resource($arg2));
 
 if($namespace and $resource) {
-   `mkdir -p $dir/resources`;
+   `mkdir -p $cache/resources`;
    my $output = run_cache("kubectl get $resource -n $namespace", "$context/resources/$namespace-$resource");
    print "\n$output" unless $quiet;
 } else {
@@ -38,14 +38,14 @@ if($namespace and $resource) {
 sub find_namespace {
    my $string = shift;
    my @found = grep { /^$string$/ } 
-                map { (split /\s+/)[0] } 
-                read_file("$dir/namespaces");
+                map { (split /\s+/)[0] }
+                read_file("$cache/namespaces");
    shift @found;
 }
 
 sub find_resource {
    my $string = shift;
-   my @types = read_file("$dir/resource-types");
+   my @types = read_file("$cache/resource-types");
    my @found_names = grep { /^${string}s?$/ } map { (split /\s+/)[0] } @types;
    my @found_mnemonics = grep { /^${string}$/ } map { (split /\s+/)[1] } @types;
    shift @found_names || shift @found_mnemonics;
