@@ -17,7 +17,7 @@ sub help {
 my $quiet;
 GetOptions('quiet|q' => \$quiet) or help and exit;
 
-my $context = get_context() or say "Context not set." and exit;
+my $context = get_context() or say STDERR "Context not set." and exit;
 my $cache = "$ENV{'HOME'}/.kubesugar-cache/$context";
 
 my ($arg1, $arg2) = (@ARGV);
@@ -29,9 +29,9 @@ if($namespace and $resource) {
    my $output = run_cache("kubectl get $resource -n $namespace", "$context/resources/$namespace-$resource");
    print "\n$output" unless $quiet;
 } else {
-   say "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;
-   say "\"$resource\" seems to be a resource type but we're missing a namespace." if $resource;
-   say "";
+   say STDERR "\"$namespace\" seems to be a namespace but we're missing a resource type." if $namespace;
+   say STDERR "\"$resource\" seems to be a resource type but we're missing a namespace." if $resource;
+   say STDERR "";
    help;
 }
 

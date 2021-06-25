@@ -16,7 +16,7 @@ sub help {
 }
 
 my @search = @ARGV or help and exit;
-my $context = get_context() or say "Context not set." and exit;
+my $context = get_context() or say STDERR "Context not set." and exit;
 my $cache = "$ENV{'HOME'}/.kubesugar-cache/$context/resources";
 `mkdir -p $cache`;
 my @filenames = list_files($cache);

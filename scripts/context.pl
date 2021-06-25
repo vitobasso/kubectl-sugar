@@ -12,7 +12,7 @@ my @query = @ARGV;
 if(@query) {
    my @results = search(@query);
    if(not @results) {
-      say "Can't find any context matching: @query";
+      say STDERR "Can't find any context matching: @query";
    } elsif(scalar @results == 1) {
       my $context = shift @results;
       use_context($context);

@@ -12,9 +12,9 @@ our @EXPORT_OK = qw( run run_cache run_attach find_do_retry );
 sub run {
     my $command = shift;
     
-    print color('bold');
-    say $command;
-    print color('reset');
+    print STDERR color('bold');
+    print STDERR "$command\n";
+    print STDERR color('reset');
     
     `$command`;
 }
@@ -22,11 +22,11 @@ sub run {
 sub run_cache {
     my ($command, $cache) = @_;
     
-    print color('bold');
-    print "$command";
-    print color('reset grey8');
-    print " > ~/.kubesugar-cache/$cache\n";
-    print color('reset');
+    print STDERR color('bold');
+    print STDERR "$command";
+    print STDERR color('reset grey8');
+    print STDERR " > ~/.kubesugar-cache/$cache\n";
+    print STDERR color('reset');
     
     my $output = `$command`;
     write_file($output, "$ENV{'HOME'}/.kubesugar-cache/$cache") if $output;
@@ -36,9 +36,9 @@ sub run_cache {
 sub run_attach {
     my $command = shift;
     
-    print color('bold');
-    say $command;
-    print color('reset');
+    print STDERR color('bold');
+    print STDERR "$command\n";
+    print STDERR color('reset');
     
     my $session = Expect->spawn($command);
     $session->slave->clone_winsize_from(\*STDIN);
@@ -58,8 +58,8 @@ sub find_do_retry {
           $callback->($ns, $type, $name);
           retry($ns) if $?==256 and $should_retry;      
        } elsif (not @result) {
-          say "Can't find $thing_missing matching: [@ARGV].";
-          say "Maybe run " . color("bold") . "kget" . color('reset') . " to update the cache.";
+          say STDERR "Can't find $thing_missing matching: [@ARGV].";
+          say STDERR "Maybe run " . color("bold") . "kget" . color('reset') . " to update the cache.";
        } else {
           print @result; # list matching resources
        }
