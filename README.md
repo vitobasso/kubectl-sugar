@@ -1,4 +1,4 @@
-A collection of perl scripts to help me type less kubectl commands.
+A collection of Perl scripts to speed up my day-to-day use of Kubernetes. They work by caching resource names so you can type short commands that won’t change after pod restarts or context switches.
 
 `kctx`  
 Shows the current context.
@@ -9,11 +9,11 @@ Sets context to the one matching all the search terms or, if ambiguous, lists ma
 `kget <namespace> <resource-type>`  
 Does `kubectl get -n <namespace> <resource-type>` and caches the result for `kexe`, `klog` and `kdes`.
 
-`kexe <search>`  
-Finds a pod then does `kubectl exec -n <namespace> -it <pod> -- bash`.
+`kexe <search> [-c <container>]`  
+Finds a pod then does `kubectl exec -n <namespace> -it <pod> [-c <container>] -- bash`.
 
-`klog <search>`  
-Finds a pod then does `kubectl logs -n <namespace> <pod>`.
+`klog <search> [-f] [-c <container>]`  
+Finds a pod then does `kubectl logs -n <namespace> <pod> [-f] [-c <container>]`.
 
 `kdes <search>`  
 Finds a resource then does `kubectl describe -n <namespace> <resource-type/name>`.
